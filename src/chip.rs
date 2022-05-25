@@ -131,7 +131,6 @@ impl Chip {
 			Decoded::Return => self.exec_return(),
 
 			Decoded::Illegal(i) => panic!("Illegal instruction: 0x{i:04x}"),
-			_ => panic!("Unimplemented instruction"),
 		}
 	}
 
