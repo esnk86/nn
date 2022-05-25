@@ -129,10 +129,10 @@ impl Chip {
 			Decoded::Move(x, nn)             => self.exec_mov(x, nn),
 			Decoded::MoveIndex(nnn)          => self.exec_movi(nnn),
 			Decoded::Return                  => self.exec_return(),
-			Decoded::SkipEqual(x, nn)        => self.exec_skip_equal(x, nn),
-			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_not_equal(x, nn),
-			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_equal_xy(x, y, n),
-			Decoded::SkipNotEqualXY(x, y, n) => self.exec_skip_not_equal_xy(x, y, n),
+			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
+			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
+			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_eq_xy(x, y, n),
+			Decoded::SkipNotEqualXY(x, y, n) => self.exec_skip_ne_xy(x, y, n),
 
 			Decoded::Illegal(i)              => panic!("Illegal instruction: 0x{i:04x}"),
 		}
@@ -166,25 +166,25 @@ impl Chip {
 		self.pc = nnn;
 	}
 
-	fn exec_skip_equal(&mut self, x: Register, nn: Byte) {
+	fn exec_skip_eq(&mut self, x: Register, nn: Byte) {
 		if self.v[x] == nn {
 			self.pc += 2;
 		}
 	}
 
-	fn exec_skip_not_equal(&mut self, x: Register, nn: Byte) {
+	fn exec_skip_ne(&mut self, x: Register, nn: Byte) {
 		if self.v[x] != nn {
 			self.pc += 2;
 		}
 	}
 
-	fn exec_skip_equal_xy(&mut self, x: Register, y: Register, n: Nibble) {
+	fn exec_skip_eq_xy(&mut self, x: Register, y: Register, n: Nibble) {
 		if self.v[x] == self.v[y] {
 			self.pc += 2;
 		}
 	}
 
-	fn exec_skip_not_equal_xy(&mut self, x: Register, y: Register, n: Nibble) {
+	fn exec_skip_ne_xy(&mut self, x: Register, y: Register, n: Nibble) {
 		if self.v[x] != self.v[y] {
 			self.pc += 2;
 		}
