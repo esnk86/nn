@@ -7,6 +7,7 @@ pub enum Decoded {
 	And(Register, Register),
 	Call(Address),
 	ClearScreen,
+	Decimal(Register),
 	Draw(Register, Register, Nibble),
 	Jump(Address),
 	Load(Register),
@@ -96,6 +97,7 @@ fn a8(i: Instruction) -> Decoded {
 
 fn f8(i: Instruction) -> Decoded {
 	match nn(i) {
+		0x33 => Decoded::Decimal(x(i)),
 		0x55 => Decoded::Store(x(i)),
 		0x65 => Decoded::Load(x(i)),
 		_ => Decoded::Illegal(i),
