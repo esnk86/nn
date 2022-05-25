@@ -75,7 +75,7 @@ impl Chip {
 		let decoded = decode::decode(fetched);
 		self.exec(decoded);
 
-		self.draw();
+		//self.draw();
 	}
 
 	//================================================================================
@@ -131,6 +131,7 @@ impl Chip {
 			Decoded::ClearScreen             => self.exec_cls(),
 			Decoded::Draw(x, y, n)           => self.exec_draw(x, y, n),
 			Decoded::Jump(nnn)               => self.exec_jump(nnn),
+			Decoded::Load(x)                 => self.exec_load(x),
 			Decoded::Move(x, nn)             => self.exec_mov(x, nn),
 			Decoded::MoveIndex(nnn)          => self.exec_movi(nnn),
 			Decoded::MoveXY(x, y)            => self.exec_mov_xy(x, y),
@@ -142,17 +143,25 @@ impl Chip {
 			Decoded::SkipEqualXY(x, y)       => self.exec_skip_eq_xy(x, y),
 			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
 			Decoded::SkipNotEqualXY(x, y)    => self.exec_skip_ne_xy(x, y),
+			Decoded::Store(x)                => self.exec_store(x),
 			Decoded::SubXY(x, y)             => self.exec_sub_xy(x, y),
 			Decoded::SubYX(x, y)             => self.exec_sub_yx(x, y),
 			Decoded::Xor(x, y)               => self.exec_xor(x, y),
 
-			Decoded::Illegal(i)              => panic!("Illegal instruction: 0x{i:04x}"),
+			Decoded::Illegal(i)              => self.handle_illegal_instruction(i),
 		}
 	}
 
 	//================================================================================
 	// Execution
 	//================================================================================
+
+	fn handle_illegal_instruction(&mut self, i: Instruction) {
+		println!("CHIP 8 halted at illegal instruction: {i:04x}");
+		while self.window.is_open() {
+			self.draw();
+		}
+	}
 
 	fn exec_cls(&mut self) {
 		for p in self.display.iter_mut() {
@@ -208,6 +217,18 @@ impl Chip {
 		self.v[x] = self.v[y]; // TODO: configurable.
 		self.v[0xF] = self.v[x] & 0x1;
 		self.v[x] >>= 1;
+	}
+
+	fn exec_store(&mut self, x: Register) {
+		for i in 0 ..= x {
+			self.memory[self.i as usize + i] = self.v[i];
+		}
+	}
+
+	fn exec_load(&mut self, x: Register) {
+		for i in 0 ..= x {
+			self.v[i] = self.memory[self.i as usize + i];
+		}
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {

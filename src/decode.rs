@@ -50,6 +50,7 @@ pub fn decode(i: Instruction) -> Decoded {
 		0x9 => Decoded::SkipNotEqualXY(x(i), y(i)),
 		0xA => Decoded::MoveIndex(nnn(i)),
 		0xD => Decoded::Draw(x(i), y(i), n(i)),
+		0xF => f8(i),
 		_ => Decoded::Illegal(i),
 	}
 }
