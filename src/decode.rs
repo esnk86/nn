@@ -10,6 +10,7 @@ pub enum Decoded {
 	Move(Register, Byte),
 	MoveIndex(Address),
 	MoveXY(Register, Register),
+	Or(Register, Register),
 	Return,
 	SkipEqual(Register, Byte),
 	SkipEqualXY(Register, Register, Nibble),
@@ -71,6 +72,7 @@ fn n(i: Instruction) -> Nibble {
 fn a8(i: Instruction) -> Decoded {
 	match n(i) {
 		0x0 => Decoded::MoveXY(x(i), y(i)),
+		0x1 => Decoded::Or(x(i), y(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
