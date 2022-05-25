@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use minifb::{Key, Window, WindowOptions};
 
 use std::num::Wrapping;
