@@ -136,9 +136,9 @@ impl Chip {
 			Decoded::Or(x, y)                => self.exec_or(x, y),
 			Decoded::Return                  => self.exec_return(),
 			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
-			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_eq_xy(x, y, n),
+			Decoded::SkipEqualXY(x, y)       => self.exec_skip_eq_xy(x, y),
 			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
-			Decoded::SkipNotEqualXY(x, y, n) => self.exec_skip_ne_xy(x, y, n),
+			Decoded::SkipNotEqualXY(x, y)    => self.exec_skip_ne_xy(x, y),
 			Decoded::SubXY(x, y)             => self.exec_sub_xy(x, y),
 			Decoded::SubYX(x, y)             => self.exec_sub_yx(x, y),
 			Decoded::Xor(x, y)               => self.exec_xor(x, y),
@@ -216,13 +216,13 @@ impl Chip {
 		}
 	}
 
-	fn exec_skip_eq_xy(&mut self, x: Register, y: Register, n: Nibble) {
+	fn exec_skip_eq_xy(&mut self, x: Register, y: Register) {
 		if self.v[x] == self.v[y] {
 			self.pc += 2;
 		}
 	}
 
-	fn exec_skip_ne_xy(&mut self, x: Register, y: Register, n: Nibble) {
+	fn exec_skip_ne_xy(&mut self, x: Register, y: Register) {
 		if self.v[x] != self.v[y] {
 			self.pc += 2;
 		}
