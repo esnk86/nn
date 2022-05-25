@@ -157,7 +157,9 @@ impl Chip {
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
-		self.v[x] += nn;
+		let vx = self.v[x] as u16;
+		let nn = nn as u16;
+		self.v[x] = ((vx + nn) % 256) as Byte;
 	}
 
 	fn exec_jump(&mut self, nnn: Address) {
