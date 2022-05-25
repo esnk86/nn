@@ -11,6 +11,7 @@ pub enum Decoded {
 	MoveIndex(Address),
 	Return,
 	SkipEqual(Register, Byte),
+	SkipNotEqual(Register, Byte),
 
 	Illegal(Instruction),
 }
@@ -28,6 +29,7 @@ pub fn decode(i: Instruction) -> Decoded {
 		0x1 => Decoded::Jump(nnn(i)),
 		0x2 => Decoded::Call(nnn(i)),
 		0x3 => Decoded::SkipEqual(x(i), nn(i)),
+		0x4 => Decoded::SkipNotEqual(x(i), nn(i)),
 		0x6 => Decoded::Move(x(i), nn(i)),
 		0x7 => Decoded::Add(x(i), nn(i)),
 		0xA => Decoded::MoveIndex(nnn(i)),
