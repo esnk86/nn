@@ -1,8 +1,8 @@
 const COLUMNS: usize = 8;
 
 pub fn dump(bytes: &Vec<u8>) {
-	let chunks = get_chunks(bytes);
-	let lines = get_lines(chunks);
+	let rows = get_rows(bytes);
+	let lines = get_lines(rows);
 	let rle = get_rle(lines);
 
 	let mut addr = 0;
@@ -20,7 +20,7 @@ pub fn dump(bytes: &Vec<u8>) {
 	}
 }
 
-fn get_chunks(bytes: &Vec<u8>) -> Vec<Vec<u8>> {
+fn get_rows(bytes: &Vec<u8>) -> Vec<Vec<u8>> {
 	let mut result = Vec::new();
 	let mut i = 0;
 
@@ -33,14 +33,14 @@ fn get_chunks(bytes: &Vec<u8>) -> Vec<Vec<u8>> {
 	result
 }
 
-fn get_lines(chunks: Vec<Vec<u8>>) -> Vec<String> {
-	chunks.iter().map(|chunk| concat(chunk)).collect()
+fn get_lines(rows: Vec<Vec<u8>>) -> Vec<String> {
+	rows.iter().map(|row| concat(row)).collect()
 }
 
-fn concat(chunk: &Vec<u8>) -> String {
+fn concat(row: &Vec<u8>) -> String {
 	let mut result = String::new();
 
-	for (i, byte) in chunk.iter().enumerate() {
+	for (i, byte) in row.iter().enumerate() {
 		if i > 0 {
 			result.push(' ');
 		}
