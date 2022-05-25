@@ -29,7 +29,7 @@ pub fn debug(rom: Vec<u8>) {
 
 fn prompt() {
 	print!("> ");
-	io::stdout().flush();
+	io::stdout().flush().unwrap();
 }
 
 fn help() {
