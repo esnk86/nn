@@ -3,6 +3,7 @@ use crate::types::*;
 #[derive(Debug)]
 pub enum Decoded {
 	Add(Register, Byte),
+	And(Register, Register),
 	Call(Address),
 	ClearScreen,
 	Draw(Register, Register, Nibble),
@@ -73,6 +74,7 @@ fn a8(i: Instruction) -> Decoded {
 	match n(i) {
 		0x0 => Decoded::MoveXY(x(i), y(i)),
 		0x1 => Decoded::Or(x(i), y(i)),
+		0x2 => Decoded::And(x(i), y(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
