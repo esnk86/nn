@@ -18,6 +18,8 @@ pub enum Decoded {
 	SkipEqualXY(Register, Register, Nibble),
 	SkipNotEqual(Register, Byte),
 	SkipNotEqualXY(Register, Register, Nibble),
+	SubXY(Register, Register),
+	SubYX(Register, Register),
 	Xor(Register, Register),
 
 	Illegal(Instruction),
@@ -79,6 +81,8 @@ fn a8(i: Instruction) -> Decoded {
 		0x2 => Decoded::And(x(i), y(i)),
 		0x3 => Decoded::Xor(x(i), y(i)),
 		0x4 => Decoded::AddXY(x(i), y(i)),
+		0x5 => Decoded::SubXY(x(i), y(i)),
+		0x7 => Decoded::SubYX(x(i), y(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
