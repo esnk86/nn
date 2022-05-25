@@ -128,10 +128,11 @@ impl Chip {
 			Decoded::Jump(nnn)               => self.exec_jump(nnn),
 			Decoded::Move(x, nn)             => self.exec_mov(x, nn),
 			Decoded::MoveIndex(nnn)          => self.exec_movi(nnn),
+			Decoded::MoveXY(x, y)            => self.exec_mov_xy(x, y),
 			Decoded::Return                  => self.exec_return(),
 			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
-			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
 			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_eq_xy(x, y, n),
+			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
 			Decoded::SkipNotEqualXY(x, y, n) => self.exec_skip_ne_xy(x, y, n),
 
 			Decoded::Illegal(i)              => panic!("Illegal instruction: 0x{i:04x}"),
@@ -154,6 +155,10 @@ impl Chip {
 
 	fn exec_mov(&mut self, x: Register, nn: Byte) {
 		self.v[x] = nn;
+	}
+
+	fn exec_mov_xy(&mut self, x: Register, y: Register) {
+		self.v[x] = self.v[y];
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
