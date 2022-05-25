@@ -34,7 +34,7 @@ fn get_rows(bytes: &Vec<u8>) -> Vec<Vec<u8>> {
 }
 
 fn get_lines(rows: Vec<Vec<u8>>) -> Vec<String> {
-	rows.iter().map(|row| concat(row)).collect()
+	rows.iter().map(concat).collect()
 }
 
 fn concat(row: &Vec<u8>) -> String {
