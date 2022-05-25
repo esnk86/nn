@@ -121,14 +121,15 @@ impl Chip {
 	fn exec(&mut self, decoded: Decoded) {
 		//println!("{:?}", decoded);
 		match decoded {
-			Decoded::ClearScreen => self.exec_cls(),
-			Decoded::MoveIndex(nnn) => self.exec_movi(nnn),
-			Decoded::Move(x, nn) => self.exec_mov(x, nn),
 			Decoded::Add(x, nn) => self.exec_add(x, nn),
-			Decoded::Jump(nnn) => self.exec_jump(nnn),
 			Decoded::Call(nnn) => self.exec_call(nnn),
-			Decoded::Return => self.exec_return(),
+			Decoded::ClearScreen => self.exec_cls(),
 			Decoded::Draw(x, y, n) => self.exec_draw(x, y, n),
+			Decoded::Jump(nnn) => self.exec_jump(nnn),
+			Decoded::Move(x, nn) => self.exec_mov(x, nn),
+			Decoded::MoveIndex(nnn) => self.exec_movi(nnn),
+			Decoded::Return => self.exec_return(),
+
 			Decoded::Illegal(i) => panic!("Illegal instruction: 0x{i:04x}"),
 			_ => panic!("Unimplemented instruction"),
 		}

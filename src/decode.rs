@@ -2,14 +2,15 @@ use crate::types::*;
 
 #[derive(Debug)]
 pub enum Decoded {
+	Add(Register, Byte),
+	Call(Address),
 	ClearScreen,
+	Draw(Register, Register, Nibble),
 	Jump(Address),
 	Move(Register, Byte),
-	Add(Register, Byte),
 	MoveIndex(Address),
-	Call(Address),
 	Return,
-	Draw(Register, Register, Nibble),
+
 	Illegal(Instruction),
 }
 
