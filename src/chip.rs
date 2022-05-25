@@ -121,17 +121,18 @@ impl Chip {
 	fn exec(&mut self, decoded: Decoded) {
 		//println!("{:?}", decoded);
 		match decoded {
-			Decoded::Add(x, nn)       => self.exec_add(x, nn),
-			Decoded::Call(nnn)        => self.exec_call(nnn),
-			Decoded::ClearScreen      => self.exec_cls(),
-			Decoded::Draw(x, y, n)    => self.exec_draw(x, y, n),
-			Decoded::Jump(nnn)        => self.exec_jump(nnn),
-			Decoded::Move(x, nn)      => self.exec_mov(x, nn),
-			Decoded::MoveIndex(nnn)   => self.exec_movi(nnn),
-			Decoded::Return           => self.exec_return(),
-			Decoded::SkipEqual(x, nn) => self.exec_skip_equal(x, nn),
+			Decoded::Add(x, nn)          => self.exec_add(x, nn),
+			Decoded::Call(nnn)           => self.exec_call(nnn),
+			Decoded::ClearScreen         => self.exec_cls(),
+			Decoded::Draw(x, y, n)       => self.exec_draw(x, y, n),
+			Decoded::Jump(nnn)           => self.exec_jump(nnn),
+			Decoded::Move(x, nn)         => self.exec_mov(x, nn),
+			Decoded::MoveIndex(nnn)      => self.exec_movi(nnn),
+			Decoded::Return              => self.exec_return(),
+			Decoded::SkipEqual(x, nn)    => self.exec_skip_equal(x, nn),
+			Decoded::SkipNotEqual(x, nn) => self.exec_skip_not_equal(x, nn),
 
-			Decoded::Illegal(i)       => panic!("Illegal instruction: 0x{i:04x}"),
+			Decoded::Illegal(i)          => panic!("Illegal instruction: 0x{i:04x}"),
 		}
 	}
 
@@ -163,6 +164,12 @@ impl Chip {
 
 	fn exec_skip_equal(&mut self, x: Register, nn: Byte) {
 		if self.v[x] == nn {
+			self.pc += 2;
+		}
+	}
+
+	fn exec_skip_not_equal(&mut self, x: Register, nn: Byte) {
+		if self.v[x] != nn {
 			self.pc += 2;
 		}
 	}
