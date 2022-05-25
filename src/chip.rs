@@ -75,7 +75,7 @@ impl Chip {
 		let decoded = decode::decode(fetched);
 		self.exec(decoded);
 
-		//self.draw();
+		self.draw();
 	}
 
 	//================================================================================
@@ -129,6 +129,7 @@ impl Chip {
 			Decoded::And(x, y)               => self.exec_and(x, y),
 			Decoded::Call(nnn)               => self.exec_call(nnn),
 			Decoded::ClearScreen             => self.exec_cls(),
+			Decoded::Decimal(x)              => self.exec_decimal(x),
 			Decoded::Draw(x, y, n)           => self.exec_draw(x, y, n),
 			Decoded::Jump(nnn)               => self.exec_jump(nnn),
 			Decoded::Load(x)                 => self.exec_load(x),
@@ -228,6 +229,18 @@ impl Chip {
 	fn exec_load(&mut self, x: Register) {
 		for i in 0 ..= x {
 			self.v[i] = self.memory[self.i as usize + i];
+		}
+	}
+
+	fn exec_decimal(&mut self, x: Register) {
+		let vx = self.v[x];
+		let i = self.i as usize;
+
+		let mut div = 100;
+
+		for addr in i .. i + 3 {
+			self.memory[addr] = (vx / div) % 10;
+			div /= 10;
 		}
 	}
 
