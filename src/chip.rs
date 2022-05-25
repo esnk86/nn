@@ -1,5 +1,7 @@
 use minifb::{Key, Window, WindowOptions};
 
+use std::num::Wrapping;
+
 use crate::decode::{self, Decoded};
 use crate::hex;
 use crate::types::*;
@@ -137,6 +139,8 @@ impl Chip {
 			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_eq_xy(x, y, n),
 			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
 			Decoded::SkipNotEqualXY(x, y, n) => self.exec_skip_ne_xy(x, y, n),
+			Decoded::SubXY(x, y)             => self.exec_sub_xy(x, y),
+			Decoded::SubYX(x, y)             => self.exec_sub_yx(x, y),
 			Decoded::Xor(x, y)               => self.exec_xor(x, y),
 
 			Decoded::Illegal(i)              => panic!("Illegal instruction: 0x{i:04x}"),
@@ -179,6 +183,16 @@ impl Chip {
 
 	fn exec_add_xy(&mut self, x: Register, y: Register) {
 		self.exec_add(x, self.v[y]);
+	}
+
+	fn exec_sub_xy(&mut self, x: Register, y: Register) {
+		let w = Wrapping(self.v[x]) - Wrapping(self.v[y]);
+		self.v[x] = w.0;
+	}
+
+	fn exec_sub_yx(&mut self, x: Register, y: Register) {
+		let w = Wrapping(self.v[y]) - Wrapping(self.v[x]);
+		self.v[x] = w.0;
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
