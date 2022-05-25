@@ -122,6 +122,7 @@ impl Chip {
 		//println!("{:?}", decoded);
 		match decoded {
 			Decoded::Add(x, nn)              => self.exec_add(x, nn),
+			Decoded::AddXY(x, y)             => self.exec_add_xy(x, y),
 			Decoded::And(x, y)               => self.exec_and(x, y),
 			Decoded::Call(nnn)               => self.exec_call(nnn),
 			Decoded::ClearScreen             => self.exec_cls(),
@@ -174,6 +175,10 @@ impl Chip {
 
 	fn exec_xor(&mut self, x: Register, y: Register) {
 		self.v[x] ^= self.v[y];
+	}
+
+	fn exec_add_xy(&mut self, x: Register, y: Register) {
+		self.v[x] += self.v[y];
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
