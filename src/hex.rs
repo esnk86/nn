@@ -2,8 +2,8 @@ const COLUMNS: usize = 8;
 
 pub fn dump(bytes: &Vec<u8>) {
 	let chunks = get_chunks(bytes);
-	let strings = get_strings(chunks);
-	let rle = get_rle(strings);
+	let lines = get_lines(chunks);
+	let rle = get_rle(lines);
 
 	let mut addr = 0;
 
@@ -33,7 +33,7 @@ fn get_chunks(bytes: &Vec<u8>) -> Vec<Vec<u8>> {
 	result
 }
 
-fn get_strings(chunks: Vec<Vec<u8>>) -> Vec<String> {
+fn get_lines(chunks: Vec<Vec<u8>>) -> Vec<String> {
 	chunks.iter().map(|chunk| concat(chunk)).collect()
 }
 
@@ -50,24 +50,24 @@ fn concat(chunk: &Vec<u8>) -> String {
 	result
 }
 
-fn get_rle(strings: Vec<String>) -> Vec<(usize, String)> {
+fn get_rle(lines: Vec<String>) -> Vec<(usize, String)> {
 	let mut result = Vec::new();
 	let mut i = 0;
 
-	while i < strings.len() {
-		result.push(get_run(&strings, &mut i));
+	while i < lines.len() {
+		result.push(get_run(&lines, &mut i));
 	}
 
 	result
 }
 
-fn get_run(strings: &Vec<String>, p: &mut usize) -> (usize, String) {
+fn get_run(lines: &Vec<String>, p: &mut usize) -> (usize, String) {
 	let mut result = (0, String::new());
 
-	for i in *p .. strings.len() {
+	for i in *p .. lines.len() {
 		if i == *p {
-			result = (1, strings[*p].clone());
-		} else if strings[*p].eq(&strings[i]) {
+			result = (1, lines[*p].clone());
+		} else if lines[*p].eq(&lines[i]) {
 			result.0 += 1;
 		} else {
 			*p = i;
@@ -75,6 +75,6 @@ fn get_run(strings: &Vec<String>, p: &mut usize) -> (usize, String) {
 		}
 	}
 
-	*p = strings.len();
+	*p = lines.len();
 	result
 }
