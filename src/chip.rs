@@ -136,6 +136,7 @@ impl Chip {
 			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_eq_xy(x, y, n),
 			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
 			Decoded::SkipNotEqualXY(x, y, n) => self.exec_skip_ne_xy(x, y, n),
+			Decoded::Xor(x, y)               => self.exec_xor(x, y),
 
 			Decoded::Illegal(i)              => panic!("Illegal instruction: 0x{i:04x}"),
 		}
@@ -169,6 +170,10 @@ impl Chip {
 
 	fn exec_and(&mut self, x: Register, y: Register) {
 		self.v[x] &= self.v[y];
+	}
+
+	fn exec_xor(&mut self, x: Register, y: Register) {
+		self.v[x] ^= self.v[y];
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
