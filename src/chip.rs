@@ -178,7 +178,7 @@ impl Chip {
 	}
 
 	fn exec_add_xy(&mut self, x: Register, y: Register) {
-		self.v[x] += self.v[y];
+		self.exec_add(x, self.v[y]);
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
