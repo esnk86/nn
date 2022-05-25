@@ -122,6 +122,7 @@ impl Chip {
 		//println!("{:?}", decoded);
 		match decoded {
 			Decoded::Add(x, nn)              => self.exec_add(x, nn),
+			Decoded::And(x, y)               => self.exec_and(x, y),
 			Decoded::Call(nnn)               => self.exec_call(nnn),
 			Decoded::ClearScreen             => self.exec_cls(),
 			Decoded::Draw(x, y, n)           => self.exec_draw(x, y, n),
@@ -129,6 +130,7 @@ impl Chip {
 			Decoded::Move(x, nn)             => self.exec_mov(x, nn),
 			Decoded::MoveIndex(nnn)          => self.exec_movi(nnn),
 			Decoded::MoveXY(x, y)            => self.exec_mov_xy(x, y),
+			Decoded::Or(x, y)                => self.exec_or(x, y),
 			Decoded::Return                  => self.exec_return(),
 			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
 			Decoded::SkipEqualXY(x, y, n)    => self.exec_skip_eq_xy(x, y, n),
@@ -159,6 +161,14 @@ impl Chip {
 
 	fn exec_mov_xy(&mut self, x: Register, y: Register) {
 		self.v[x] = self.v[y];
+	}
+
+	fn exec_or(&mut self, x: Register, y: Register) {
+		self.v[x] |= self.v[y];
+	}
+
+	fn exec_and(&mut self, x: Register, y: Register) {
+		self.v[x] &= self.v[y];
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
