@@ -9,6 +9,7 @@ pub enum Decoded {
 	ClearScreen,
 	Draw(Register, Register, Nibble),
 	Jump(Address),
+	Load(Register),
 	Move(Register, Byte),
 	MoveIndex(Address),
 	MoveXY(Register, Register),
@@ -20,6 +21,7 @@ pub enum Decoded {
 	SkipEqualXY(Register, Register),
 	SkipNotEqual(Register, Byte),
 	SkipNotEqualXY(Register, Register),
+	Store(Register),
 	SubXY(Register, Register),
 	SubYX(Register, Register),
 	Xor(Register, Register),
@@ -87,6 +89,14 @@ fn a8(i: Instruction) -> Decoded {
 		0x5 => Decoded::SubXY(x(i), y(i)),
 		0x7 => Decoded::SubYX(x(i), y(i)),
 		0xE => Decoded::ShiftLeft(x(i), y(i)),
+		_ => Decoded::Illegal(i),
+	}
+}
+
+fn f8(i: Instruction) -> Decoded {
+	match nn(i) {
+		0x55 => Decoded::Store(x(i)),
+		0x65 => Decoded::Load(x(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
