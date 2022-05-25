@@ -136,6 +136,8 @@ impl Chip {
 			Decoded::MoveXY(x, y)            => self.exec_mov_xy(x, y),
 			Decoded::Or(x, y)                => self.exec_or(x, y),
 			Decoded::Return                  => self.exec_return(),
+			Decoded::ShiftLeft(x, y)         => self.exec_shift_left(x, y),
+			Decoded::ShiftRight(x, y)        => self.exec_shift_right(x, y),
 			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
 			Decoded::SkipEqualXY(x, y)       => self.exec_skip_eq_xy(x, y),
 			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
@@ -194,6 +196,18 @@ impl Chip {
 	fn exec_sub_yx(&mut self, x: Register, y: Register) {
 		let w = Wrapping(self.v[y]) - Wrapping(self.v[x]);
 		self.v[x] = w.0;
+	}
+
+	fn exec_shift_left(&mut self, x: Register, y: Register) {
+		self.v[x] = self.v[y]; // TODO: configurable.
+		self.v[0xF] = (self.v[x] & 0x80) >> 7;
+		self.v[x] <<= 1;
+	}
+
+	fn exec_shift_right(&mut self, x: Register, y: Register) {
+		self.v[x] = self.v[y]; // TODO: configurable.
+		self.v[0xF] = self.v[x] & 0x1;
+		self.v[x] >>= 1;
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
