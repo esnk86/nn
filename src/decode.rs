@@ -14,6 +14,8 @@ pub enum Decoded {
 	MoveXY(Register, Register),
 	Or(Register, Register),
 	Return,
+	ShiftLeft(Register, Register),
+	ShiftRight(Register, Register),
 	SkipEqual(Register, Byte),
 	SkipEqualXY(Register, Register),
 	SkipNotEqual(Register, Byte),
@@ -81,8 +83,10 @@ fn a8(i: Instruction) -> Decoded {
 		0x2 => Decoded::And(x(i), y(i)),
 		0x3 => Decoded::Xor(x(i), y(i)),
 		0x4 => Decoded::AddXY(x(i), y(i)),
+		0x6 => Decoded::ShiftRight(x(i), y(i)),
 		0x5 => Decoded::SubXY(x(i), y(i)),
 		0x7 => Decoded::SubYX(x(i), y(i)),
+		0xE => Decoded::ShiftLeft(x(i), y(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
