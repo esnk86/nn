@@ -21,16 +21,16 @@ pub fn dump(bytes: &Vec<u8>) {
 }
 
 fn get_rows(bytes: &Vec<u8>) -> Vec<Vec<u8>> {
-	let mut result = Vec::new();
+	let mut rows = Vec::new();
 	let mut i = 0;
 
 	while i < bytes.len() {
 		let j = usize::min(i + COLUMNS, bytes.len());
-		result.push(bytes[i..j].iter().cloned().collect());
+		rows.push(bytes[i..j].iter().cloned().collect());
 		i += COLUMNS;
 	}
 
-	result
+	rows
 }
 
 fn get_lines(rows: Vec<Vec<u8>>) -> Vec<String> {
@@ -38,43 +38,43 @@ fn get_lines(rows: Vec<Vec<u8>>) -> Vec<String> {
 }
 
 fn concat(row: &Vec<u8>) -> String {
-	let mut result = String::new();
+	let mut line = String::new();
 
 	for (i, byte) in row.iter().enumerate() {
 		if i > 0 {
-			result.push(' ');
+			line.push(' ');
 		}
-		result.push_str(&format!("{byte:02x}"));
+		line.push_str(&format!("{byte:02x}"));
 	}
 
-	result
+	line
 }
 
 fn get_rle(lines: Vec<String>) -> Vec<(usize, String)> {
-	let mut result = Vec::new();
+	let mut rle = Vec::new();
 	let mut i = 0;
 
 	while i < lines.len() {
-		result.push(get_run(&lines, &mut i));
+		rle.push(get_run(&lines, &mut i));
 	}
 
-	result
+	rle
 }
 
 fn get_run(lines: &Vec<String>, p: &mut usize) -> (usize, String) {
-	let mut result = (0, String::new());
+	let mut run = (0, String::new());
 
 	for i in *p .. lines.len() {
 		if i == *p {
-			result = (1, lines[*p].clone());
+			run = (1, lines[*p].clone());
 		} else if lines[*p].eq(&lines[i]) {
-			result.0 += 1;
+			run.0 += 1;
 		} else {
 			*p = i;
-			return result;
+			return run;
 		}
 	}
 
 	*p = lines.len();
-	result
+	run
 }
