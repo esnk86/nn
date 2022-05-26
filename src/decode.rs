@@ -103,8 +103,8 @@ fn a8(i: Instruction) -> Decoded {
 
 fn ae(i: Instruction) -> Decoded {
 	match nn(i) {
-		0x9E => Decoded::SkipKey(a(i)),
-		0xA1 => Decoded::SkipNotKey(a(i)),
+		0x9E => Decoded::SkipKey(x(i)),
+		0xA1 => Decoded::SkipNotKey(x(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
