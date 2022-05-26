@@ -1,5 +1,6 @@
 #[allow(unused_imports)]
 use minifb::{Key, Window, WindowOptions};
+use rand::Rng;
 
 use std::num::Wrapping;
 
@@ -138,6 +139,7 @@ impl Chip {
 			Decoded::MoveIndex(nnn)          => self.exec_movi(nnn),
 			Decoded::MoveXY(x, y)            => self.exec_mov_xy(x, y),
 			Decoded::Or(x, y)                => self.exec_or(x, y),
+			Decoded::Random(x, nn)           => self.exec_rand(x, nn),
 			Decoded::Return                  => self.exec_return(),
 			Decoded::ShiftLeft(x, y)         => self.exec_shift_left(x, y),
 			Decoded::ShiftRight(x, y)        => self.exec_shift_right(x, y),
@@ -256,6 +258,11 @@ impl Chip {
 				break;
 			}
 		}
+	}
+
+	fn exec_rand(&mut self, x: Register, nn: Byte) {
+		let rn = rand::thread_rng().gen_range(0 ..= 255);
+		self.v[x] = rn & nn;
 	}
 
 	fn exec_add(&mut self, x: Register, nn: Byte) {
