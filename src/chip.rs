@@ -116,10 +116,11 @@ impl Chip {
 	//================================================================================
 
 	fn fetch(&self) -> Instruction {
-		let i = usize::from(self.pc);
-		let a = u16::from(self.memory[i]);
-		let b = u16::from(if i + 1 == MEMORY_SIZE { 0 } else { self.memory[i + 1] });
-		((a << 8) | b) as Instruction
+		let i = self.pc as usize;
+		let a = self.memory[i] as Instruction;
+		let b = self.memory[i + 1] as Instruction;
+
+		a << 8 | b
 	}
 
 	fn exec(&mut self, decoded: Decoded) {
