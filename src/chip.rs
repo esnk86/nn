@@ -303,32 +303,24 @@ impl Chip {
 	}
 
 	fn exec_skip_key(&mut self, x: Register) {
-		let find = byte_to_keys(self.v[x]);
+		let want = byte_to_key(self.v[x]);
 		let have = self.window.get_keys();
 
-		for key1 in have.iter() {
-			for key2 in find.iter() {
-				if key1 == key2 {
-					self.pc += 2;
-					return;
-				}
+		if let Some(key) = have.get(0) {
+			if *key == want {
+				self.pc += 2;
 			}
 		}
 	}
 
 	fn exec_skip_not_key(&mut self, x: Register) {
-		let find = byte_to_keys(self.v[x]);
+		let want = byte_to_key(self.v[x]);
 		let have = self.window.get_keys();
 
-		for key1 in have.iter() {
-			for key2 in find.iter() {
-				if key1 == key2 {
-					return;
-				}
-			}
+		match have.get(0) {
+			Some(key) => if *key != want { self.pc += 2; },
+			None => self.pc += 2,
 		}
-
-		self.pc += 2;
 	}
 
 	fn exec_call(&mut self, nnn: Address) {
@@ -414,54 +406,44 @@ impl Chip {
 
 fn key_to_byte(key: Key) -> Byte {
 	match key {
-		Key::Key0 => 0x0,
 		Key::Key1 => 0x1,
 		Key::Key2 => 0x2,
 		Key::Key3 => 0x3,
-		Key::Key4 => 0x4,
-		Key::Key5 => 0x5,
-		Key::Key6 => 0x6,
-		Key::Key7 => 0x7,
-		Key::Key8 => 0x8,
-		Key::Key9 => 0x9,
-		Key::NumPad0 => 0x0,
-		Key::NumPad1 => 0x1,
-		Key::NumPad2 => 0x2,
-		Key::NumPad3 => 0x3,
-		Key::NumPad4 => 0x4,
-		Key::NumPad5 => 0x5,
-		Key::NumPad6 => 0x6,
-		Key::NumPad7 => 0x7,
-		Key::NumPad8 => 0x8,
-		Key::NumPad9 => 0x9,
-		Key::A => 0xA,
-		Key::B => 0xB,
-		Key::C => 0xC,
-		Key::D => 0xD,
-		Key::E => 0xE,
-		Key::F => 0xF,
+		Key::Key4 => 0xC,
+		Key::Q => 0x4,
+		Key::W => 0x5,
+		Key::E => 0x6,
+		Key::R => 0xD,
+		Key::A => 0x7,
+		Key::S => 0x8,
+		Key::D => 0x9,
+		Key::F => 0xE,
+		Key::Z => 0xA,
+		Key::X => 0x0,
+		Key::C => 0xB,
+		Key::V => 0xF,
 		_ => panic!("Unhandled key press: {:?}", key),
 	}
 }
 
-fn byte_to_keys(byte: Byte) -> Vec<Key> {
+fn byte_to_key(byte: Byte) -> Key {
 	match byte {
-		0x0 => vec![Key::Key0, Key::NumPad0],
-		0x1 => vec![Key::Key1, Key::NumPad1],
-		0x2 => vec![Key::Key2, Key::NumPad2],
-		0x3 => vec![Key::Key3, Key::NumPad3],
-		0x4 => vec![Key::Key4, Key::NumPad4],
-		0x5 => vec![Key::Key5, Key::NumPad5],
-		0x6 => vec![Key::Key6, Key::NumPad6],
-		0x7 => vec![Key::Key7, Key::NumPad7],
-		0x8 => vec![Key::Key8, Key::NumPad8],
-		0x9 => vec![Key::Key9, Key::NumPad9],
-		0xA => vec![Key::A],
-		0xB => vec![Key::B],
-		0xC => vec![Key::C],
-		0xD => vec![Key::D],
-		0xE => vec![Key::E],
-		0xF => vec![Key::F],
+		0x1 => Key::Key1,
+		0x2 => Key::Key2,
+		0x3 => Key::Key3,
+		0xC => Key::Key4,
+		0x4 => Key::Q,
+		0x5 => Key::W,
+		0x6 => Key::E,
+		0xD => Key::R,
+		0x7 => Key::A,
+		0x8 => Key::S,
+		0x9 => Key::D,
+		0xE => Key::F,
+		0xA => Key::Z,
+		0x0 => Key::X,
+		0xB => Key::C,
+		0xF => Key::V,
 		_ => panic!("Unhandled byte-to-key: {byte}"),
 	}
 }
