@@ -18,6 +18,7 @@ pub enum Decoded {
 	Or(Register, Register),
 	Random(Register, Byte),
 	Return,
+	SetSoundTimer(Register),
 	ShiftLeft(Register, Register),
 	ShiftRight(Register, Register),
 	SkipEqual(Register, Byte),
@@ -112,6 +113,7 @@ fn ae(i: Instruction) -> Decoded {
 fn af(i: Instruction) -> Decoded {
 	match nn(i) {
 		0x0A => Decoded::GetKey(x(i)),
+		0x18 => Decoded::SetSoundTimer(x(i)),
 		0x33 => Decoded::Decimal(x(i)),
 		0x55 => Decoded::Store(x(i)),
 		0x65 => Decoded::Load(x(i)),
