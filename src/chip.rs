@@ -75,7 +75,7 @@ impl Chip {
 		let decoded = decode::decode(fetched);
 		self.exec(decoded);
 
-		self.draw();
+		//self.draw();
 	}
 
 	//================================================================================
@@ -131,6 +131,7 @@ impl Chip {
 			Decoded::ClearScreen             => self.exec_cls(),
 			Decoded::Decimal(x)              => self.exec_decimal(x),
 			Decoded::Draw(x, y, n)           => self.exec_draw(x, y, n),
+			Decoded::GetKey(x)               => self.exec_get_key(x),
 			Decoded::Jump(nnn)               => self.exec_jump(nnn),
 			Decoded::Load(x)                 => self.exec_load(x),
 			Decoded::Move(x, nn)             => self.exec_mov(x, nn),
@@ -158,7 +159,7 @@ impl Chip {
 	//================================================================================
 
 	fn handle_illegal_instruction(&mut self, i: Instruction) {
-		println!("CHIP 8 halted at illegal instruction: {i:04x}");
+		println!("Illegal instruction: {i:04x}");
 		while self.window.is_open() {
 			self.draw();
 		}
@@ -244,6 +245,19 @@ impl Chip {
 		}
 	}
 
+	fn exec_get_key(&mut self, x: Register) {
+		loop {
+			let keys: Vec<Key> = self.window.get_keys();
+
+			if keys.len() == 0 {
+				self.draw();
+			} else {
+				self.v[x] = key_to_byte(keys[0]);
+				break;
+			}
+		}
+	}
+
 	fn exec_add(&mut self, x: Register, nn: Byte) {
 		let w = Wrapping(self.v[x]) + Wrapping(nn);
 		self.v[x] = w.0;
@@ -313,6 +327,8 @@ impl Chip {
 			}
 			y += 1;
 		}
+
+		self.draw();
 	}
 
 	//================================================================================
@@ -350,5 +366,37 @@ impl Chip {
 				self.frame_buffer[py * WINDOW_WIDTH + px] = c;
 			}
 		}
+	}
+}
+
+fn key_to_byte(key: Key) -> Byte {
+	match key {
+		Key::Key0 => 0x0,
+		Key::Key1 => 0x1,
+		Key::Key2 => 0x2,
+		Key::Key3 => 0x3,
+		Key::Key4 => 0x4,
+		Key::Key5 => 0x5,
+		Key::Key6 => 0x6,
+		Key::Key7 => 0x7,
+		Key::Key8 => 0x8,
+		Key::Key9 => 0x9,
+		Key::NumPad0 => 0x0,
+		Key::NumPad1 => 0x1,
+		Key::NumPad2 => 0x2,
+		Key::NumPad3 => 0x3,
+		Key::NumPad4 => 0x4,
+		Key::NumPad5 => 0x5,
+		Key::NumPad6 => 0x6,
+		Key::NumPad7 => 0x7,
+		Key::NumPad8 => 0x8,
+		Key::NumPad9 => 0x9,
+		Key::A => 0xA,
+		Key::B => 0xB,
+		Key::C => 0xC,
+		Key::D => 0xD,
+		Key::E => 0xE,
+		Key::F => 0xF,
+		_ => panic!("Unhandled key press: {:?}", key),
 	}
 }
