@@ -1,5 +1,7 @@
 use strict;
 use warnings;
+use feature 'say';
+use Getopt::Std;
 
 sub to_hex {
 	return sprintf "0x%s", shift;
@@ -29,6 +31,17 @@ my @key = qw(
 	Z X C V
 );
 
+my %opts;
+getopts('r', \%opts);
+
 for (0 .. 15) {
-	printf "%s => %s,\n", to_hex($hex[$_]), to_key($key[$_]);
+	my ($k, $v);
+
+	if ($opts{r}) {
+		($k, $v) = (to_key($key[$_]), to_hex($hex[$_]));
+	} else {
+		($k, $v) = (to_hex($hex[$_]), to_key($key[$_]));
+	}
+
+	say "$k => $v,";
 }
