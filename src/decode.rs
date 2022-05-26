@@ -57,7 +57,7 @@ pub fn decode(i: Instruction) -> Decoded {
 		0xC => Decoded::Random(x(i), nn(i)),
 		0xD => Decoded::Draw(x(i), y(i), n(i)),
 		0xE => ae(i),
-		0xF => f8(i),
+		0xF => af(i),
 		_ => Decoded::Illegal(i),
 	}
 }
@@ -109,7 +109,7 @@ fn ae(i: Instruction) -> Decoded {
 	}
 }
 
-fn f8(i: Instruction) -> Decoded {
+fn af(i: Instruction) -> Decoded {
 	match nn(i) {
 		0x0A => Decoded::GetKey(x(i)),
 		0x33 => Decoded::Decimal(x(i)),
