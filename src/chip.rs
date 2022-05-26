@@ -141,6 +141,7 @@ impl Chip {
 			Decoded::Or(x, y)                => self.exec_or(x, y),
 			Decoded::Random(x, nn)           => self.exec_rand(x, nn),
 			Decoded::Return                  => self.exec_return(),
+			Decoded::SetSoundTimer(x)        => self.exec_set_sound_timer(x),
 			Decoded::ShiftLeft(x, y)         => self.exec_shift_left(x, y),
 			Decoded::ShiftRight(x, y)        => self.exec_shift_right(x, y),
 			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
@@ -339,6 +340,9 @@ impl Chip {
 			Some(addr) => addr,
 			None => panic!("call stack empty"),
 		}
+	}
+
+	fn exec_set_sound_timer(&mut self, _x: Register) {
 	}
 
 	fn exec_draw(&mut self, x: Register, y: Register, n: Nibble) {
