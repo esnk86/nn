@@ -22,8 +22,10 @@ pub enum Decoded {
 	ShiftRight(Register, Register),
 	SkipEqual(Register, Byte),
 	SkipEqualXY(Register, Register),
+	SkipKey(Register),
 	SkipNotEqual(Register, Byte),
 	SkipNotEqualXY(Register, Register),
+	SkipNotKey(Register),
 	Store(Register),
 	SubXY(Register, Register),
 	SubYX(Register, Register),
@@ -54,6 +56,7 @@ pub fn decode(i: Instruction) -> Decoded {
 		0xA => Decoded::MoveIndex(nnn(i)),
 		0xC => Decoded::Random(x(i), nn(i)),
 		0xD => Decoded::Draw(x(i), y(i), n(i)),
+		0xE => ae(i),
 		0xF => f8(i),
 		_ => Decoded::Illegal(i),
 	}
@@ -94,6 +97,14 @@ fn a8(i: Instruction) -> Decoded {
 		0x5 => Decoded::SubXY(x(i), y(i)),
 		0x7 => Decoded::SubYX(x(i), y(i)),
 		0xE => Decoded::ShiftLeft(x(i), y(i)),
+		_ => Decoded::Illegal(i),
+	}
+}
+
+fn ae(i: Instruction) -> Decoded {
+	match nn(i) {
+		0x9E => SkipKey(a(i)),
+		0xA1 => SkipNotKey(a(i)),
 		_ => Decoded::Illegal(i),
 	}
 }
