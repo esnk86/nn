@@ -145,8 +145,10 @@ impl Chip {
 			Decoded::ShiftRight(x, y)        => self.exec_shift_right(x, y),
 			Decoded::SkipEqual(x, nn)        => self.exec_skip_eq(x, nn),
 			Decoded::SkipEqualXY(x, y)       => self.exec_skip_eq_xy(x, y),
+			Decoded::SkipKey(x)              => self.exec_skip_key(x),
 			Decoded::SkipNotEqual(x, nn)     => self.exec_skip_ne(x, nn),
 			Decoded::SkipNotEqualXY(x, y)    => self.exec_skip_ne_xy(x, y),
+			Decoded::SkipNotKey(x)           => self.exec_skip_not_key(x),
 			Decoded::Store(x)                => self.exec_store(x),
 			Decoded::SubXY(x, y)             => self.exec_sub_xy(x, y),
 			Decoded::SubYX(x, y)             => self.exec_sub_yx(x, y),
@@ -298,6 +300,35 @@ impl Chip {
 		}
 	}
 
+	fn exec_skip_key(&mut self, x: Register) {
+		let find = byte_to_keys(self.v[x]);
+		let have = self.window.get_keys();
+
+		for key1 in have.iter() {
+			for key2 in find.iter() {
+				if key1 == key2 {
+					self.pc += 2;
+					return;
+				}
+			}
+		}
+	}
+
+	fn exec_skip_not_key(&mut self, x: Register) {
+		let find = byte_to_keys(self.v[x]);
+		let have = self.window.get_keys();
+
+		for key1 in have.iter() {
+			for key2 in find.iter() {
+				if key1 == key2 {
+					return;
+				}
+			}
+		}
+
+		self.pc += 2;
+	}
+
 	fn exec_call(&mut self, nnn: Address) {
 		self.stack.push(self.pc);
 		self.pc = nnn;
@@ -405,5 +436,27 @@ fn key_to_byte(key: Key) -> Byte {
 		Key::E => 0xE,
 		Key::F => 0xF,
 		_ => panic!("Unhandled key press: {:?}", key),
+	}
+}
+
+fn byte_to_keys(byte: Byte) -> Vec<Key> {
+	match byte {
+		0x0 => vec![Key::Key0, Key::NumPad0],
+		0x1 => vec![Key::Key1, Key::NumPad1],
+		0x2 => vec![Key::Key2, Key::NumPad2],
+		0x3 => vec![Key::Key3, Key::NumPad3],
+		0x4 => vec![Key::Key4, Key::NumPad4],
+		0x5 => vec![Key::Key5, Key::NumPad5],
+		0x6 => vec![Key::Key6, Key::NumPad6],
+		0x7 => vec![Key::Key7, Key::NumPad7],
+		0x8 => vec![Key::Key8, Key::NumPad8],
+		0x9 => vec![Key::Key9, Key::NumPad9],
+		0xA => vec![Key::A],
+		0xB => vec![Key::B],
+		0xC => vec![Key::C],
+		0xD => vec![Key::D],
+		0xE => vec![Key::E],
+		0xF => vec![Key::F],
+		_ => panic!("Unhandled byte-to-key: {byte}"),
 	}
 }
