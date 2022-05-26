@@ -252,7 +252,7 @@ impl Chip {
 	}
 
 	fn exec_get_key(&mut self, x: Register) {
-		loop {
+		while self.window.is_open() {
 			let keys: Vec<Key> = self.window.get_keys();
 
 			if keys.len() == 0 {
