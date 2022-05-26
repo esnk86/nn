@@ -36,15 +36,8 @@ pub enum Decoded {
 }
 
 pub fn decode(i: Instruction) -> Decoded {
-	if i == 0x00E0 {
-		return Decoded::ClearScreen;
-	}
-
-	if i == 0x00EE {
-		return Decoded::Return;
-	}
-
 	match a(i) {
+		0x0 => a0(i),
 		0x1 => Decoded::Jump(nnn(i)),
 		0x2 => Decoded::Call(nnn(i)),
 		0x3 => Decoded::SkipEqual(x(i), nn(i)),
@@ -85,6 +78,14 @@ fn nn(i: Instruction) -> Byte {
 
 fn n(i: Instruction) -> Nibble {
 	(i & 0xF) as Nibble
+}
+
+fn a0(i: Instruction) -> Decoded {
+	match i {
+		0x00E0 => Decoded::ClearScreen,
+		0x00EE => Decoded::Return,
+		_ => Decoded::Illegal(i),
+	}
 }
 
 fn a8(i: Instruction) -> Decoded {
