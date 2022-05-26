@@ -9,6 +9,7 @@ pub enum Decoded {
 	ClearScreen,
 	Decimal(Register),
 	Draw(Register, Register, Nibble),
+	GetKey(Register),
 	Jump(Address),
 	Load(Register),
 	Move(Register, Byte),
@@ -97,6 +98,7 @@ fn a8(i: Instruction) -> Decoded {
 
 fn f8(i: Instruction) -> Decoded {
 	match nn(i) {
+		0x0A => Decoded::GetKey(x(i)),
 		0x33 => Decoded::Decimal(x(i)),
 		0x55 => Decoded::Store(x(i)),
 		0x65 => Decoded::Load(x(i)),
