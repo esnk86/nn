@@ -81,11 +81,6 @@ impl Chip {
 }
 
 impl Chip {
-
-	//================================================================================
-	// Debug
-	//================================================================================
-
 	pub fn dump_next_instruction(&self) {
 		println!("Next instruction: {:04x}", self.fetch());
 	}
@@ -116,11 +111,6 @@ impl Chip {
 }
 
 impl Chip {
-
-	//================================================================================
-	// CPU
-	//================================================================================
-
 	fn fetch(&self) -> Instruction {
 		let i = self.pc as usize;
 		let a = self.memory[i] as Instruction;
@@ -165,13 +155,6 @@ impl Chip {
 			Decoded::Illegal(i)              => self.handle_illegal_instruction(i),
 		}
 	}
-}
-
-impl Chip {
-
-	//================================================================================
-	// Execution
-	//================================================================================
 
 	fn handle_illegal_instruction(&mut self, i: Instruction) {
 		println!("Illegal instruction: {i:04x}");
@@ -179,17 +162,10 @@ impl Chip {
 			self.draw();
 		}
 	}
+}
 
-	fn exec_cls(&mut self) {
-		for p in self.display.iter_mut() {
-			*p = false;
-		}
-	}
-
-	fn exec_movi(&mut self, nnn: Address) {
-		self.i = nnn;
-	}
-
+// Move, load, and store instructions.
+impl Chip {
 	fn exec_mov(&mut self, x: Register, nn: Byte) {
 		self.v[x] = nn;
 	}
@@ -198,48 +174,8 @@ impl Chip {
 		self.v[x] = self.v[y];
 	}
 
-	fn exec_or(&mut self, x: Register, y: Register) {
-		self.v[x] |= self.v[y];
-	}
-
-	fn exec_and(&mut self, x: Register, y: Register) {
-		self.v[x] &= self.v[y];
-	}
-
-	fn exec_xor(&mut self, x: Register, y: Register) {
-		self.v[x] ^= self.v[y];
-	}
-
-	fn exec_add_xy(&mut self, x: Register, y: Register) {
-		self.exec_add(x, self.v[y]);
-	}
-
-	fn exec_sub_xy(&mut self, x: Register, y: Register) {
-		let w = Wrapping(self.v[x]) - Wrapping(self.v[y]);
-		self.v[x] = w.0;
-	}
-
-	fn exec_sub_yx(&mut self, x: Register, y: Register) {
-		let w = Wrapping(self.v[y]) - Wrapping(self.v[x]);
-		self.v[x] = w.0;
-	}
-
-	fn exec_shift_left(&mut self, x: Register, y: Register) {
-		self.v[x] = self.v[y]; // TODO: configurable.
-		self.v[0xF] = (self.v[x] & 0x80) >> 7;
-		self.v[x] <<= 1;
-	}
-
-	fn exec_shift_right(&mut self, x: Register, y: Register) {
-		self.v[x] = self.v[y]; // TODO: configurable.
-		self.v[0xF] = self.v[x] & 0x1;
-		self.v[x] >>= 1;
-	}
-
-	fn exec_store(&mut self, x: Register) {
-		for i in 0 ..= x {
-			self.memory[self.i as usize + i] = self.v[i];
-		}
+	fn exec_movi(&mut self, nnn: Address) {
+		self.i = nnn;
 	}
 
 	fn exec_load(&mut self, x: Register) {
@@ -248,43 +184,29 @@ impl Chip {
 		}
 	}
 
-	fn exec_decimal(&mut self, x: Register) {
-		let vx = self.v[x];
-		let i = self.i as usize;
-
-		let mut div = 100;
-
-		for addr in i .. i + 3 {
-			self.memory[addr] = (vx / div) % 10;
-			div /= 10;
+	fn exec_store(&mut self, x: Register) {
+		for i in 0 ..= x {
+			self.memory[self.i as usize + i] = self.v[i];
 		}
 	}
+}
 
-	fn exec_get_key(&mut self, x: Register) {
-		while self.window.is_open() {
-			let keys: Vec<Key> = self.window.get_keys();
-
-			if keys.len() == 0 {
-				self.draw();
-			} else {
-				self.v[x] = key_to_byte(keys[0]);
-				break;
-			}
-		}
-	}
-
-	fn exec_rand(&mut self, x: Register, nn: Byte) {
-		let rn = rand::thread_rng().gen_range(0 ..= 255);
-		self.v[x] = rn & nn;
-	}
-
-	fn exec_add(&mut self, x: Register, nn: Byte) {
-		let w = Wrapping(self.v[x]) + Wrapping(nn);
-		self.v[x] = w.0;
-	}
-
+// Instructions for control flow.
+impl Chip {
 	fn exec_jump(&mut self, nnn: Address) {
 		self.pc = nnn;
+	}
+
+	fn exec_call(&mut self, nnn: Address) {
+		self.stack.push(self.pc);
+		self.pc = nnn;
+	}
+
+	fn exec_return(&mut self) {
+		self.pc = match self.stack.pop() {
+			Some(addr) => addr,
+			None => panic!("call stack empty"),
+		}
 	}
 
 	fn exec_skip_eq(&mut self, x: Register, nn: Byte) {
@@ -332,19 +254,98 @@ impl Chip {
 		}
 	}
 
-	fn exec_call(&mut self, nnn: Address) {
-		self.stack.push(self.pc);
-		self.pc = nnn;
-	}
+	fn exec_get_key(&mut self, x: Register) {
+		while self.window.is_open() {
+			let keys: Vec<Key> = self.window.get_keys();
 
-	fn exec_return(&mut self) {
-		self.pc = match self.stack.pop() {
-			Some(addr) => addr,
-			None => panic!("call stack empty"),
+			if keys.len() == 0 {
+				self.draw();
+			} else {
+				self.v[x] = key_to_byte(keys[0]);
+				break;
+			}
 		}
 	}
+}
 
+// Instructions for logic.
+impl Chip {
+	fn exec_and(&mut self, x: Register, y: Register) {
+		self.v[x] &= self.v[y];
+	}
+
+	fn exec_or(&mut self, x: Register, y: Register) {
+		self.v[x] |= self.v[y];
+	}
+
+	fn exec_xor(&mut self, x: Register, y: Register) {
+		self.v[x] ^= self.v[y];
+	}
+
+	fn exec_shift_left(&mut self, x: Register, y: Register) {
+		self.v[x] = self.v[y]; // TODO: configurable.
+		self.v[0xF] = (self.v[x] & 0x80) >> 7;
+		self.v[x] <<= 1;
+	}
+
+	fn exec_shift_right(&mut self, x: Register, y: Register) {
+		self.v[x] = self.v[y]; // TODO: configurable.
+		self.v[0xF] = self.v[x] & 0x1;
+		self.v[x] >>= 1;
+	}
+}
+
+// Instructions for maths.
+impl Chip {
+	fn exec_add(&mut self, x: Register, nn: Byte) {
+		let w = Wrapping(self.v[x]) + Wrapping(nn);
+		self.v[x] = w.0;
+	}
+
+	fn exec_add_xy(&mut self, x: Register, y: Register) {
+		self.exec_add(x, self.v[y]);
+	}
+
+	fn exec_sub_xy(&mut self, x: Register, y: Register) {
+		let w = Wrapping(self.v[x]) - Wrapping(self.v[y]);
+		self.v[x] = w.0;
+	}
+
+	fn exec_sub_yx(&mut self, x: Register, y: Register) {
+		let w = Wrapping(self.v[y]) - Wrapping(self.v[x]);
+		self.v[x] = w.0;
+	}
+
+	fn exec_rand(&mut self, x: Register, nn: Byte) {
+		let rn = rand::thread_rng().gen_range(0 ..= 255);
+		self.v[x] = rn & nn;
+	}
+
+	fn exec_decimal(&mut self, x: Register) {
+		let vx = self.v[x];
+		let i = self.i as usize;
+
+		let mut div = 100;
+
+		for addr in i .. i + 3 {
+			self.memory[addr] = (vx / div) % 10;
+			div /= 10;
+		}
+	}
+}
+
+// Instructions for timers.
+impl Chip {
 	fn exec_set_sound_timer(&mut self, _x: Register) {
+	}
+}
+
+// Instructions for the display.
+impl Chip {
+	fn exec_cls(&mut self) {
+		for p in self.display.iter_mut() {
+			*p = false;
+		}
 	}
 
 	fn exec_draw(&mut self, x: Register, y: Register, n: Nibble) {
@@ -377,11 +378,6 @@ impl Chip {
 }
 
 impl Chip {
-
-	//================================================================================
-	// Display
-	//================================================================================
-
 	fn set_pixel(&mut self, x: usize, y: usize) {
 		self.display[y * DISPLAY_WIDTH + x] = true;
 	}
