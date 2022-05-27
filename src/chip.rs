@@ -287,7 +287,7 @@ impl Chip {
 
 	fn exec_shift_left(&mut self, x: Register, y: Register) {
 		self.v[x] = self.v[y]; // TODO: configurable.
-		self.v[0xF] = (self.v[x] & 0x80) >> 7;
+		self.v[0xF] = self.v[x] >> 7;
 		self.v[x] <<= 1;
 	}
 
