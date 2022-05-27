@@ -27,6 +27,7 @@ pub struct Chip {
 	frame_buffer: Vec<u32>,
 }
 
+// Public interface.
 impl Chip {
 	pub fn new() -> Self {
 		Self {
@@ -80,6 +81,7 @@ impl Chip {
 	}
 }
 
+// Debugging methods.
 impl Chip {
 	pub fn dump_next_instruction(&self) {
 		println!("Next instruction: {:04x}", self.fetch());
@@ -110,6 +112,7 @@ impl Chip {
 	}
 }
 
+// CPU emulation.
 impl Chip {
 	fn fetch(&self) -> Instruction {
 		let i = self.pc as usize;
@@ -377,6 +380,7 @@ impl Chip {
 	}
 }
 
+// Methods for handling the display and window.
 impl Chip {
 	fn set_pixel(&mut self, x: usize, y: usize) {
 		self.display[y * DISPLAY_WIDTH + x] = true;
