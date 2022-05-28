@@ -9,6 +9,7 @@ use crate::hex;
 use crate::types::*;
 
 const MEMORY_SIZE: usize = 4096;
+const FONT_MEMORY_OFFSET: usize = 0;
 const PROGRAM_MEMORY_OFFSET: usize = 512;
 const DISPLAY_WIDTH: usize = 64;
 const DISPLAY_HEIGHT: usize = 32;
@@ -132,6 +133,7 @@ impl Chip {
 			Decoded::ClearScreen             => self.exec_cls(),
 			Decoded::Decimal(x)              => self.exec_decimal(x),
 			Decoded::Draw(x, y, n)           => self.exec_draw(x, y, n),
+			Decoded::FontChar(x)             => self.exec_font_char(x),
 			Decoded::GetKey(x)               => self.exec_get_key(x),
 			Decoded::Jump(nnn)               => self.exec_jump(nnn),
 			Decoded::Load(x)                 => self.exec_load(x),
@@ -349,6 +351,10 @@ impl Chip {
 		for p in self.display.iter_mut() {
 			*p = false;
 		}
+	}
+
+	fn exec_font_char(&mut self, x: Register) {
+		self.i = self.v[x] as Address + FONT_MEMORY_OFFSET as Address;
 	}
 
 	fn exec_draw(&mut self, x: Register, y: Register, n: Nibble) {
