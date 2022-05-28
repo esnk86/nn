@@ -3,6 +3,7 @@ use crate::types::*;
 #[derive(Debug)]
 pub enum Decoded {
 	Add(Register, Byte),
+	AddIndex(Register),
 	AddXY(Register, Register),
 	And(Register, Register),
 	Call(Address),
@@ -120,6 +121,7 @@ fn af(i: Instruction) -> Decoded {
 		0x0A => Decoded::GetKey(x(i)),
 		0x15 => Decoded::DelayTimerSet(x(i)),
 		0x18 => Decoded::SetSoundTimer(x(i)),
+		0x1E => Decoded::AddIndex(x(i)),
 		0x29 => Decoded::FontChar(x(i)),
 		0x33 => Decoded::Decimal(x(i)),
 		0x55 => Decoded::Store(x(i)),
