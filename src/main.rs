@@ -4,6 +4,7 @@ mod decode;
 mod font;
 mod get_line;
 mod hex;
+mod timer;
 mod types;
 
 use crate::chip::Chip;
