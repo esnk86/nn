@@ -7,6 +7,7 @@ use std::num::Wrapping;
 use crate::decode::{self, Decoded};
 use crate::font;
 use crate::hex;
+use crate::timer::Timer;
 use crate::types::*;
 
 const MEMORY_SIZE: usize = 4096;
@@ -24,6 +25,7 @@ pub struct Chip {
 	v: [Byte; 16],
 	memory: Vec<Byte>,
 	stack: Vec<Address>,
+	delay: Timer,
 	display: Vec<bool>,
 	window: Window,
 	frame_buffer: Vec<u32>,
@@ -38,6 +40,7 @@ impl Chip {
 			v: [0; 16],
 			memory: vec![0; MEMORY_SIZE],
 			stack: Vec::new(),
+			delay: Timer::new(),
 			display: vec![false; DISPLAY_WIDTH * DISPLAY_HEIGHT],
 			window: Self::new_window(),
 			frame_buffer: vec![0; WINDOW_WIDTH * WINDOW_HEIGHT],
@@ -141,6 +144,8 @@ impl Chip {
 			Decoded::Call(nnn)               => self.exec_call(nnn),
 			Decoded::ClearScreen             => self.exec_cls(),
 			Decoded::Decimal(x)              => self.exec_decimal(x),
+			Decoded::DelayTimerGet(x)        => self.exec_delay_timer_get(x),
+			Decoded::DelayTimerSet(x)        => self.exec_delay_timer_set(x),
 			Decoded::Draw(x, y, n)           => self.exec_draw(x, y, n),
 			Decoded::FontChar(x)             => self.exec_font_char(x),
 			Decoded::GetKey(x)               => self.exec_get_key(x),
@@ -351,6 +356,12 @@ impl Chip {
 // Instructions for timers.
 impl Chip {
 	fn exec_set_sound_timer(&mut self, _x: Register) {
+	}
+
+	fn exec_delay_timer_set(&mut self, x: Register) {
+	}
+
+	fn exec_delay_timer_get(&mut self, x: Register) {
 	}
 }
 
