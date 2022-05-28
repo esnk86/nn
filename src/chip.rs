@@ -17,10 +17,10 @@ const WINDOW_WIDTH: usize = SQUARE_SIZE * DISPLAY_WIDTH;
 const WINDOW_HEIGHT: usize = SQUARE_SIZE * DISPLAY_HEIGHT;
 
 pub struct Chip {
-	memory: Vec<Byte>,
 	pc: Address,
 	i: Address,
 	v: [Byte; 16],
+	memory: Vec<Byte>,
 	stack: Vec<Address>,
 	display: Vec<bool>,
 	window: Window,
@@ -31,10 +31,10 @@ pub struct Chip {
 impl Chip {
 	pub fn new() -> Self {
 		Self {
-			memory: vec![0; MEMORY_SIZE],
 			pc: PROGRAM_MEMORY_OFFSET as Address,
 			i: 0,
 			v: [0; 16],
+			memory: vec![0; MEMORY_SIZE],
 			stack: Vec::new(),
 			display: vec![false; DISPLAY_WIDTH * DISPLAY_HEIGHT],
 			window: Self::new_window(),
