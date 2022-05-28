@@ -1,6 +1,7 @@
 mod chip;
 mod debug;
 mod decode;
+mod font;
 mod get_line;
 mod hex;
 mod types;
