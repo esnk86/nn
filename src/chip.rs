@@ -360,9 +360,11 @@ impl Chip {
 	}
 
 	fn exec_delay_timer_set(&mut self, x: Register) {
+		self.delay.set(self.v[x]);
 	}
 
 	fn exec_delay_timer_get(&mut self, x: Register) {
+		self.v[x] = self.delay.get();
 	}
 }
 
