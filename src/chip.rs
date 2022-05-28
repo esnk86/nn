@@ -140,6 +140,7 @@ impl Chip {
 		//println!("{:?}", decoded);
 		match decoded {
 			Decoded::Add(x, nn)              => self.exec_add(x, nn),
+			Decoded::AddIndex(x)             => self.exec_add_index(x),
 			Decoded::AddXY(x, y)             => self.exec_add_xy(x, y),
 			Decoded::And(x, y)               => self.exec_and(x, y),
 			Decoded::Call(nnn)               => self.exec_call(nnn),
@@ -334,6 +335,10 @@ impl Chip {
 	fn exec_sub_yx(&mut self, x: Register, y: Register) {
 		let w = Wrapping(self.v[y]) - Wrapping(self.v[x]);
 		self.v[x] = w.0;
+	}
+
+	fn exec_add_index(&mut self, x: Register) {
+		self.i += self.v[x] as Address;
 	}
 
 	fn exec_rand(&mut self, x: Register, nn: Byte) {
