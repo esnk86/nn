@@ -5,6 +5,7 @@ use rand::Rng;
 use std::num::Wrapping;
 
 use crate::decode::{self, Decoded};
+use crate::font;
 use crate::hex;
 use crate::types::*;
 
@@ -59,6 +60,13 @@ impl Chip {
 		window
 	}
 
+	pub fn load_font(&mut self) {
+		let font = font::get();
+		for (i, byte) in font.iter().enumerate() {
+			self.memory[i + FONT_MEMORY_OFFSET] = *byte;
+		}
+	}
+
 	pub fn load_rom(&mut self, bytes: Vec<u8>) {
 		for (i, byte) in bytes.iter().enumerate() {
 			self.memory[i + PROGRAM_MEMORY_OFFSET] = *byte;
@@ -66,6 +74,7 @@ impl Chip {
 	}
 
 	pub fn run(&mut self) {
+		self.load_font();
 		while self.window.is_open() {
 			self.step();
 		}
