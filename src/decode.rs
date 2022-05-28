@@ -8,6 +8,8 @@ pub enum Decoded {
 	Call(Address),
 	ClearScreen,
 	Decimal(Register),
+	DelayTimerGet(Register),
+	DelayTimerSet(Register),
 	Draw(Register, Register, Nibble),
 	FontChar(Register),
 	GetKey(Register),
@@ -114,7 +116,9 @@ fn ae(i: Instruction) -> Decoded {
 
 fn af(i: Instruction) -> Decoded {
 	match nn(i) {
+		0x07 => Decoded::DelayTimerGet(x(i)),
 		0x0A => Decoded::GetKey(x(i)),
+		0x15 => Decoded::DelayTimerSet(x(i)),
 		0x18 => Decoded::SetSoundTimer(x(i)),
 		0x29 => Decoded::FontChar(x(i)),
 		0x33 => Decoded::Decimal(x(i)),
