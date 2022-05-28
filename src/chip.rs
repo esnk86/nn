@@ -11,6 +11,7 @@ use crate::timer::Timer;
 use crate::types::*;
 
 const MEMORY_SIZE: usize = 4096;
+const FONT_BYTE_COUNT: Address = 5;
 const FONT_MEMORY_OFFSET: usize = 0;
 const PROGRAM_MEMORY_OFFSET: usize = 512;
 const DISPLAY_WIDTH: usize = 64;
@@ -374,7 +375,7 @@ impl Chip {
 	}
 
 	fn exec_font_char(&mut self, x: Register) {
-		self.i = self.v[x] as Address + FONT_MEMORY_OFFSET as Address;
+		self.i = FONT_BYTE_COUNT * (self.v[x] as Address + FONT_MEMORY_OFFSET as Address);
 	}
 
 	fn exec_draw(&mut self, x: Register, y: Register, n: Nibble) {
