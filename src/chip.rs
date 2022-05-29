@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use minifb::{Key, Window, WindowOptions};
+use minifb::{Key, Window, WindowOptions, Scale};
 use rand::Rng;
 
 use std::num::Wrapping;
@@ -16,9 +16,6 @@ const FONT_MEMORY_OFFSET: usize = 0;
 const PROGRAM_MEMORY_OFFSET: usize = 512;
 const DISPLAY_WIDTH: usize = 64;
 const DISPLAY_HEIGHT: usize = 32;
-const SQUARE_SIZE: usize = 10;
-const WINDOW_WIDTH: usize = SQUARE_SIZE * DISPLAY_WIDTH;
-const WINDOW_HEIGHT: usize = SQUARE_SIZE * DISPLAY_HEIGHT;
 
 pub struct Chip {
 	pc: Address,
@@ -44,16 +41,19 @@ impl Chip {
 			delay: Timer::new(),
 			display: vec![false; DISPLAY_WIDTH * DISPLAY_HEIGHT],
 			window: Self::new_window(),
-			frame_buffer: vec![0; WINDOW_WIDTH * WINDOW_HEIGHT],
+			frame_buffer: vec![0; DISPLAY_WIDTH * DISPLAY_HEIGHT],
 		}
 	}
 
 	fn new_window() -> Window {
+		let mut window_options = WindowOptions::default();
+		window_options.scale = Scale::X8;
+
 		let mut window = Window::new(
 			"CHIP 8",
-			WINDOW_WIDTH,
-			WINDOW_HEIGHT,
-			WindowOptions::default(),
+			DISPLAY_WIDTH,
+			DISPLAY_HEIGHT,
+			window_options,
 		)
 		.unwrap_or_else(|e| {
 			panic!("{}", e);
@@ -432,21 +432,13 @@ impl Chip {
 				} else {
 					0
 				};
-				self.draw_square(x, y, c);
+				self.frame_buffer[y * DISPLAY_WIDTH + x] = c;
 			}
 		}
 
 		self.window
-			.update_with_buffer(&self.frame_buffer, WINDOW_WIDTH, WINDOW_HEIGHT)
+			.update_with_buffer(&self.frame_buffer, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 			.unwrap();
-	}
-
-	fn draw_square(&mut self, x: usize, y: usize, c: u32) {
-		for py in SQUARE_SIZE * y .. SQUARE_SIZE * (y + 1) {
-			for px in SQUARE_SIZE * x .. SQUARE_SIZE * (x + 1) {
-				self.frame_buffer[py * WINDOW_WIDTH + px] = c;
-			}
-		}
 	}
 }
 
