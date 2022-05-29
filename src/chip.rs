@@ -24,9 +24,8 @@ pub struct Chip {
 	memory: Vec<Byte>,
 	stack: Vec<Address>,
 	delay: Timer,
-	display: Vec<bool>,
+	display: Vec<u32>,
 	window: Window,
-	frame_buffer: Vec<u32>,
 }
 
 // Public interface.
@@ -39,9 +38,8 @@ impl Chip {
 			memory: vec![0; MEMORY_SIZE],
 			stack: Vec::new(),
 			delay: Timer::new(),
-			display: vec![false; DISPLAY_WIDTH * DISPLAY_HEIGHT],
+			display: vec![0; DISPLAY_WIDTH * DISPLAY_HEIGHT],
 			window: Self::new_window(),
-			frame_buffer: vec![0; DISPLAY_WIDTH * DISPLAY_HEIGHT],
 		}
 	}
 
@@ -377,7 +375,7 @@ impl Chip {
 impl Chip {
 	fn exec_cls(&mut self) {
 		for p in self.display.iter_mut() {
-			*p = false;
+			*p = 0;
 		}
 	}
 
@@ -398,7 +396,7 @@ impl Chip {
 			let mut x = vx;
 			for shift in (0 .. 8).rev() {
 				if byte >> shift & 1 == 1 {
-					if self.display[y * DISPLAY_WIDTH + x] {
+					if self.display[y * DISPLAY_WIDTH + x] == 0xFFFFFF {
 						self.v[0xF] = 1;
 						self.clear_pixel(x, y);
 					} else {
@@ -417,27 +415,16 @@ impl Chip {
 // Methods for handling the display and window.
 impl Chip {
 	fn set_pixel(&mut self, x: usize, y: usize) {
-		self.display[y * DISPLAY_WIDTH + x] = true;
+		self.display[y * DISPLAY_WIDTH + x] = 0xFFFFFF;
 	}
 
 	fn clear_pixel(&mut self, x: usize, y: usize) {
-		self.display[y * DISPLAY_WIDTH + x] = false;
+		self.display[y * DISPLAY_WIDTH + x] = 0;
 	}
 
 	fn draw(&mut self) {
-		for y in 0 .. DISPLAY_HEIGHT {
-			for x in 0 .. DISPLAY_WIDTH {
-				let c = if self.display[y * DISPLAY_WIDTH + x] {
-					0xFFFFFF
-				} else {
-					0
-				};
-				self.frame_buffer[y * DISPLAY_WIDTH + x] = c;
-			}
-		}
-
 		self.window
-			.update_with_buffer(&self.frame_buffer, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+			.update_with_buffer(&self.display, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 			.unwrap();
 	}
 }
