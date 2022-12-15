@@ -1,4 +1,3 @@
-/target
-/roms
 *.swp
-*.ch8
+/src/roms
+/target
