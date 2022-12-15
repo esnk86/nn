@@ -4,20 +4,21 @@ use crate::chip::Chip;
 use crate::get_line::get_line;
 
 pub fn debug(rom: Vec<u8>) {
-    println!("Debug mode");
+    println!("Debug mode (h for help)");
 
     let mut chip = Chip::new();
 
     chip.load_rom(rom);
-
+    chip.dump_next_instruction();
     prompt();
+
     while let Some(line) = get_line() {
         match line.trim_start().chars().next() {
             Some('.') => chip.dump_next_instruction(),
             Some('r') => chip.dump_registers(),
             Some('m') => chip.dump_memory(),
             Some('c') => chip.dump_stack(),
-            Some('s') => chip.step(),
+            Some('s') => { chip.step(); chip.dump_next_instruction(); }
             Some('h') => help(),
             Some('q') => break,
             Some(_) => println!("Unknown command."),
